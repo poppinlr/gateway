@@ -2,11 +2,7 @@ package com.zhuochen.gateway;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.gateway.route.RouteLocator;
-import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 
 /**
@@ -16,21 +12,14 @@ import org.springframework.context.annotation.Configuration;
  */
 @SpringBootApplication
 @EnableEurekaClient
-@Configuration
 public class GatewayApplication {
 
-    @Bean
-    public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
-        return builder.routes()
-                .route("um_route", r -> r
-                        .path("/um/**")
-                        .uri("lb://user-management/")
-                )
-                .build();
+    public static void main(String[] args) {
+        SpringApplication.run(GatewayApplication.class, args);
     }
 
 //    @Bean
-//    public DiscoveryClientRouteDefinitionLocator discoveryClientRouteLocator(DiscoveryClient discoveryClient) {
+//    public DiscoveryClientRouteDefinitionLocator clientRouteDefinitionLocator(DiscoveryClient discoveryClient) {
 //        return new DiscoveryClientRouteDefinitionLocator(discoveryClient);
 //    }
 
@@ -38,7 +27,12 @@ public class GatewayApplication {
 //    public RouterFunction<ServerResponse> testWhenMetricPathIsNotMeet() {
 //        return RouterFunctions.route(
 //                RequestPredicates.path("/**"),
-//                request -> ServerResponse.ok().body(BodyInserters.fromObject("hello")));
+//                request -> ServerResponse
+//                        .ok()
+//                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+//                        .body()
+//                        .body(BodyInserters.fromObject("hello"))
+//        );
 //    }
 
 //    @Bean
@@ -117,7 +111,4 @@ public class GatewayApplication {
 //                request -> ServerResponse.ok().body(BodyInserters.fromObject("hello")));
 //    }
 
-    public static void main(String[] args) {
-        SpringApplication.run(GatewayApplication.class, args);
-    }
 }
