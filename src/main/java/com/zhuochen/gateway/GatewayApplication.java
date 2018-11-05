@@ -2,7 +2,10 @@ package com.zhuochen.gateway;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.gateway.route.RouteLocator;
+import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
+import org.springframework.context.annotation.Bean;
 
 
 /**
@@ -11,15 +14,21 @@ import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
  * Filter: These are instances Spring Framework GatewayFilter constructed in with a specific factory. Here, requests and responses can be modified before or after sending the downstream request.
  */
 @SpringBootApplication
-@EnableEurekaClient
+@EnableDiscoveryClient
 public class GatewayApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(GatewayApplication.class, args);
+    @Bean
+    public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
+        return builder.routes()
+                .route("um_route", r -> r
+                        .path("/session/**")
+                        .uri("lb://session/")
+                )
+                .build();
     }
 
 //    @Bean
-//    public DiscoveryClientRouteDefinitionLocator clientRouteDefinitionLocator(DiscoveryClient discoveryClient) {
+//    public DiscoveryClientRouteDefinitionLocator discoveryClientRouteLocator(DiscoveryClient discoveryClient) {
 //        return new DiscoveryClientRouteDefinitionLocator(discoveryClient);
 //    }
 
@@ -27,12 +36,7 @@ public class GatewayApplication {
 //    public RouterFunction<ServerResponse> testWhenMetricPathIsNotMeet() {
 //        return RouterFunctions.route(
 //                RequestPredicates.path("/**"),
-//                request -> ServerResponse
-//                        .ok()
-//                        .contentType(MediaType.APPLICATION_JSON_UTF8)
-//                        .body()
-//                        .body(BodyInserters.fromObject("hello"))
-//        );
+//                request -> ServerResponse.ok().body(BodyInserters.fromObject("hello")));
 //    }
 
 //    @Bean
@@ -111,4 +115,7 @@ public class GatewayApplication {
 //                request -> ServerResponse.ok().body(BodyInserters.fromObject("hello")));
 //    }
 
+    public static void main(String[] args) {
+        SpringApplication.run(GatewayApplication.class, args);
+    }
 }
